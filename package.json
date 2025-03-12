@@ -4,10 +4,10 @@
     "check:write": "pnpm check --write"
   },
   "volta": {
-    "node": "20.16.0"
+    "node": "22.14.0"
   },
-  "packageManager": "pnpm@9.4.0",
+  "packageManager": "pnpm@9.15.9",
   "devDependencies": {
-    "@biomejs/biome": "^1.8.3"
+    "@biomejs/biome": "^1.9.4"
   }
 }
