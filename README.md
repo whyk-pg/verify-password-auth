@@ -108,4 +108,9 @@ sequenceDiagram
 ```
 
 ## 参考資料
-- 特になし
+- [action | Remix](https://remix.run/docs/en/main/route/action)
+- [Remixで認証機能を実装](https://zenn.dev/aono/articles/67e97342495ac6#%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E8%AA%8D%E8%A8%BC)
+- [Cookie Helper - Hono](https://hono.dev/docs/helpers/cookie)
+- [JWT Authentication Helper - Hono](https://hono.dev/docs/helpers/jwt)
+- [Access-Control-Allow-Credentials - HTTP | MDN](https://developer.mozilla.org/ja/docs/Web/HTTP/Reference/Headers/Access-Control-Allow-Credentials)
+- [Including credentials - Using the Fetch API - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#including_credentials)

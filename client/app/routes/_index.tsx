@@ -9,6 +9,13 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim unde itaque quia, a libero, minima quidem fugit dignissimos alias dolorum eveniet quis beatae non autem quibusdam necessitatibus, dolores soluta praesentium! Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus enim sunt officiis nam ea nulla deserunt nemo tenetur in corporis libero, dolore voluptates reprehenderit fugiat neque earum, voluptate esse sed.</p>
+    <p>
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim unde itaque
+      quia, a libero, minima quidem fugit dignissimos alias dolorum eveniet quis
+      beatae non autem quibusdam necessitatibus, dolores soluta praesentium!
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus enim sunt
+      officiis nam ea nulla deserunt nemo tenetur in corporis libero, dolore
+      voluptates reprehenderit fugiat neque earum, voluptate esse sed.
+    </p>
   );
 }

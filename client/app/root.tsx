@@ -32,8 +32,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="h-screen">
-        <header className="bg-slate-800 px-5 py-4">
+        <header className="bg-slate-800 px-5 py-4 flex justify-between items-center">
           <h1 className="text-3xl font-bold">Verify Password Auth</h1>
+          <a href="/login">ログイン</a>
         </header>
         <main className="w-2/5 mx-auto mt-10">{children}</main>
         <ScrollRestoration />
