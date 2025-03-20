@@ -13,7 +13,7 @@ export const meta: MetaFunction = () => {
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const res = await fetch("https://89cf-175-132-206-78.ngrok-free.app/login", {
+  const res = await fetch("http://localhost:8787/login", {
     method: "POST",
     body: JSON.stringify({
       email: formData.get("email"),
@@ -22,12 +22,15 @@ export const action: ActionFunction = async ({ request }) => {
     credentials: "include",
   });
 
-  console.log({ header: res.headers, cookie: res.headers.get("Set-Cookie") });
-
   if (!res.ok) {
     return redirect("/login");
   }
-  return redirect("/");
+
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": res.headers.get("Set-Cookie") ?? "",
+    }
+  });
 };
 
 export default function Index() {
