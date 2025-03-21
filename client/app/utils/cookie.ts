@@ -1,7 +1,7 @@
 import {
   type CookieOptions,
   createCookieSessionStorage,
-} from "@remix-run/node";
+} from "@remix-run/cloudflare";
 
 const MAX_AGE = 60 * 60;
 const cookieBaseOptions: CookieOptions = {

@@ -3,7 +3,7 @@ import {
   type LoaderFunctionArgs,
   type MetaFunction,
   redirect,
-} from "@remix-run/node";
+} from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { authTokenStorage, refreshTokenStorage } from "~/utils/cookie";
 
@@ -29,7 +29,10 @@ export const action: ActionFunction = async ({ request }) => {
     return redirect(`/login?status=${res.status}`);
   }
 
-  const { authToken, refreshToken } = await res.json();
+  const { authToken, refreshToken } = (await res.json()) as {
+    authToken: string;
+    refreshToken: string;
+  };
   const headers = new Headers();
   const authSession = await authTokenStorage.getSession();
   authSession.set("auth_token", authToken);
