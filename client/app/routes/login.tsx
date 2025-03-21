@@ -1,12 +1,11 @@
 import {
   type ActionFunction,
-  type CookieOptions,
   type LoaderFunctionArgs,
   type MetaFunction,
-  createCookie,
   redirect,
 } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
+import { authTokenCookie, refreshTokenCookie } from "~/utils/cookie";
 
 export const meta: MetaFunction = () => {
   return [
@@ -31,16 +30,6 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   const { authToken, refreshToken } = await res.json();
-  const MAX_AGE = 60 * 60;
-  const cookieOptions: CookieOptions = {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: MAX_AGE,
-    expires: new Date(Date.now() + MAX_AGE * 1000),
-  };
-  const authTokenCookie = createCookie("auth_token", cookieOptions);
-  const refreshTokenCookie = createCookie("refresh_token", cookieOptions);
   const headers = new Headers();
   headers.append("Set-Cookie", await authTokenCookie.serialize(authToken));
   headers.append(

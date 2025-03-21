@@ -1,13 +1,15 @@
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 
 import "./tailwind.css";
+import { getUser } from "./utils/user";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -22,7 +24,13 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  return getUser(request);
+};
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const user = useLoaderData<typeof loader>();
+
   return (
     <html lang="en">
       <head>
@@ -34,7 +42,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body className="h-screen">
         <header className="bg-slate-800 px-5 py-4 flex justify-between items-center">
           <h1 className="text-3xl font-bold">Verify Password Auth</h1>
-          <a href="/login">ログイン</a>
+          {user.login && (
+            <div className="flex items-center space-x-4">
+              <img
+                src={user.icon}
+                alt="icon"
+                className="w-8 h-8 rounded-full"
+              />
+              <p>
+                {user.username} ({user.role})
+              </p>
+            </div>
+          )}
+          {!user.login && <a href="/login">ログイン</a>}
         </header>
         <main className="w-2/5 mx-auto mt-10">{children}</main>
         <ScrollRestoration />
