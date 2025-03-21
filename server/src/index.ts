@@ -96,8 +96,4 @@ app.get("/refresh", (c) => {
   return c.json({ message: "Refresh" });
 });
 
-app.get("/logout", (c) => {
-  return c.json({ message: "Logout" });
-});
-
 export default app;
