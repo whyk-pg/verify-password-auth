@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { setCookie } from "hono/cookie";
 import { cors } from "hono/cors";
 import { HTTPException } from "hono/http-exception";
 import { sign } from "hono/jwt";
@@ -61,28 +60,12 @@ app.post("/login", async (c) => {
   }
 
   const exp = Math.floor(Date.now() / 1000) + 60 * 60;
-  const MAX_AGE = 60 * 60;
   const SECRET = "secret";
   const payload = { sub: user.username, role: user.role, exp };
   const authToken = await sign(payload, SECRET);
   const refreshToken = await sign(payload, SECRET);
 
-  setCookie(c, "auth_token", authToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    maxAge: MAX_AGE,
-    expires: new Date(Date.now() + MAX_AGE * 1000),
-  });
-  setCookie(c, "refresh_token", refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    maxAge: MAX_AGE,
-    expires: new Date(Date.now() + MAX_AGE * 1000),
-  });
-
-  return c.json({ message: "Login success" });
+  return c.json({ authToken, refreshToken });
 });
 
 app.get("/refresh", (c) => {

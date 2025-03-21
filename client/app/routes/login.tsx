@@ -1,6 +1,8 @@
 import {
   type ActionFunction,
+  type CookieOptions,
   type MetaFunction,
+  createCookie,
   redirect,
 } from "@remix-run/node";
 
@@ -26,11 +28,25 @@ export const action: ActionFunction = async ({ request }) => {
     return redirect("/login");
   }
 
-  return redirect("/", {
-    headers: {
-      "Set-Cookie": res.headers.get("Set-Cookie") ?? "",
-    }
-  });
+  const { authToken, refreshToken } = await res.json();
+  const MAX_AGE = 60 * 60;
+  const cookieOptions: CookieOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: MAX_AGE,
+    expires: new Date(Date.now() + MAX_AGE * 1000),
+  };
+  const authTokenCookie = createCookie("auth_token", cookieOptions);
+  const refreshTokenCookie = createCookie("refresh_token", cookieOptions);
+  const headers = new Headers();
+  headers.append("Set-Cookie", await authTokenCookie.serialize(authToken));
+  headers.append(
+    "Set-Cookie",
+    await refreshTokenCookie.serialize(refreshToken),
+  );
+
+  return redirect("/", { headers });
 };
 
 export default function Index() {
