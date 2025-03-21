@@ -23,6 +23,7 @@ interface User {
   username: string;
   role: Role;
   email: string;
+  icon_url: string;
   password: string;
 }
 
@@ -32,6 +33,8 @@ const MOCK_USERS = [
     email: "mock01@example.com",
     username: "mock01",
     password: "password",
+    // [Deno Avater](https://deno-avatar.deno.dev)で生成したアバター画像
+    icon_url: "https://deno-avatar.deno.dev/avatar/50659f.svg",
     role: Role.ADMIN,
   },
 ] satisfies User[];
@@ -59,11 +62,27 @@ app.post("/login", async (c) => {
     throw new HTTPException(401, { message: "Unauthorized" });
   }
 
-  const exp = Math.floor(Date.now() / 1000) + 60 * 60;
-  const SECRET = "secret";
-  const payload = { sub: user.username, role: user.role, exp };
-  const authToken = await sign(payload, SECRET);
-  const refreshToken = await sign(payload, SECRET);
+  const RELATIVE_ONE_HOUR = Math.floor(Date.now() / 1000) + 60 * 60;
+  const authExpire = RELATIVE_ONE_HOUR;
+  const refreshExpire = RELATIVE_ONE_HOUR * 24 * 7;
+  const authToken = await sign(
+    {
+      sub: user.username,
+      role: user.role,
+      icon: user.icon_url,
+      exp: authExpire,
+      token_type: "access",
+    },
+    "secret",
+  );
+  const refreshToken = await sign(
+    {
+      sub: user.username,
+      exp: refreshExpire,
+      token_type: "refresh",
+    },
+    "refresh_secret",
+  );
 
   return c.json({ authToken, refreshToken });
 });
