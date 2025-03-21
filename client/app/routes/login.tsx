@@ -4,7 +4,7 @@ import {
   type MetaFunction,
   redirect,
 } from "@remix-run/node";
-import { json, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import { authTokenCookie, refreshTokenCookie } from "~/utils/cookie";
 
 export const meta: MetaFunction = () => {
@@ -42,7 +42,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const loader = ({ request }: LoaderFunctionArgs) => {
   const status = new URL(request.url).searchParams.get("status");
-  return json({ status });
+  return { status };
 };
 
 export default function Index() {
