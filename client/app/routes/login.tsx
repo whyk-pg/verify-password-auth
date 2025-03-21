@@ -1,10 +1,12 @@
 import {
   type ActionFunction,
   type CookieOptions,
+  type LoaderFunctionArgs,
   type MetaFunction,
   createCookie,
   redirect,
 } from "@remix-run/node";
+import { json, useLoaderData } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -25,7 +27,7 @@ export const action: ActionFunction = async ({ request }) => {
   });
 
   if (!res.ok) {
-    return redirect("/login");
+    return redirect(`/login?status=${res.status}`);
   }
 
   const { authToken, refreshToken } = await res.json();
@@ -49,20 +51,30 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect("/", { headers });
 };
 
+export const loader = ({ request }: LoaderFunctionArgs) => {
+  const status = new URL(request.url).searchParams.get("status");
+  return json({ status });
+};
+
 export default function Index() {
+  const { status } = useLoaderData<typeof loader>();
+
   return (
-    <form method="post">
-      <div className="flex flex-col">
-        <div>
-          <label htmlFor="email">メールアドレス</label>
-          <input type="email" id="email" name="email" />
+    <>
+      <form method="post">
+        <div className="flex flex-col">
+          <div>
+            <label htmlFor="email">メールアドレス</label>
+            <input type="email" id="email" name="email" />
+          </div>
+          <div>
+            <label htmlFor="password">パスワード</label>
+            <input type="password" id="password" name="password" />
+          </div>
         </div>
-        <div>
-          <label htmlFor="password">パスワード</label>
-          <input type="password" id="password" name="password" />
-        </div>
-      </div>
-      <button type="submit">ログイン</button>
-    </form>
+        <button type="submit">ログイン</button>
+      </form>
+      {status === null ? "" : <p>{status}エラーが出ました</p>}
+    </>
   );
 }
