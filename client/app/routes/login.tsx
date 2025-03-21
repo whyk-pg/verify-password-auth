@@ -5,7 +5,7 @@ import {
   redirect,
 } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { authTokenCookie, refreshTokenCookie } from "~/utils/cookie";
+import { authTokenStorage, refreshTokenStorage } from "~/utils/cookie";
 
 export const meta: MetaFunction = () => {
   return [
@@ -31,10 +31,17 @@ export const action: ActionFunction = async ({ request }) => {
 
   const { authToken, refreshToken } = await res.json();
   const headers = new Headers();
-  headers.append("Set-Cookie", await authTokenCookie.serialize(authToken));
+  const authSession = await authTokenStorage.getSession();
+  authSession.set("auth_token", authToken);
+  const refreshSession = await refreshTokenStorage.getSession();
+  refreshSession.set("refresh_token", refreshToken);
   headers.append(
     "Set-Cookie",
-    await refreshTokenCookie.serialize(refreshToken),
+    await authTokenStorage.commitSession(authSession),
+  );
+  headers.append(
+    "Set-Cookie",
+    await refreshTokenStorage.commitSession(refreshSession),
   );
 
   return redirect("/", { headers });

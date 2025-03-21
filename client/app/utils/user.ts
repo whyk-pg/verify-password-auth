@@ -1,5 +1,5 @@
 import { jwtVerify } from "jose";
-import { authTokenCookie } from "./cookie";
+import { authTokenStorage } from "./cookie";
 
 type NotLoggedIn = {
   login: false;
@@ -24,9 +24,9 @@ export const getUser = async (request: Request): Promise<User> => {
       login: false,
     };
   }
-  const authToken = await authTokenCookie.parse(cookieHeader);
+  const authSession = await authTokenStorage.getSession(cookieHeader);
   const { payload } = await jwtVerify<Payload>(
-    authToken,
+    authSession.get("auth_token"),
     new TextEncoder().encode(process.env.ACCESS_SECRET ?? ""),
   );
   return {
