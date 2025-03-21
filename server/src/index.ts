@@ -3,7 +3,13 @@ import { cors } from "hono/cors";
 import { HTTPException } from "hono/http-exception";
 import { sign } from "hono/jwt";
 
-const app = new Hono();
+type Bindings = {
+  SERVICE_ORIGIN: string;
+  ACCESS_SECRET: string;
+  REFRESH_SECRET: string;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
 
 app.get("/", (c) => {
   return c.text("Hello Hono!");
@@ -39,13 +45,12 @@ const MOCK_USERS = [
   },
 ] satisfies User[];
 
-app.use(
-  "*",
+app.use("*", (c, next) =>
   cors({
-    origin: "http://localhost:5173",
+    origin: c.env.SERVICE_ORIGIN,
     allowMethods: ["GET", "POST"],
     credentials: true,
-  }),
+  })(c, next),
 );
 
 app.post("/login", async (c) => {
@@ -73,7 +78,7 @@ app.post("/login", async (c) => {
       exp: authExpire,
       token_type: "access",
     },
-    "secret",
+    c.env.ACCESS_SECRET,
   );
   const refreshToken = await sign(
     {
@@ -81,7 +86,7 @@ app.post("/login", async (c) => {
       exp: refreshExpire,
       token_type: "refresh",
     },
-    "refresh_secret",
+    c.env.REFRESH_SECRET,
   );
 
   return c.json({ authToken, refreshToken });

@@ -16,7 +16,7 @@ export const meta: MetaFunction = () => {
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const res = await fetch("http://localhost:8787/login", {
+  const res = await fetch(`${process.env.API_ORIGIN}/login`, {
     method: "POST",
     body: JSON.stringify({
       email: formData.get("email"),

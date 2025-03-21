@@ -25,10 +25,9 @@ export const getUser = async (request: Request): Promise<User> => {
     };
   }
   const authToken = await authTokenCookie.parse(cookieHeader);
-  const SECRET = "secret";
   const { payload } = await jwtVerify<Payload>(
     authToken,
-    new TextEncoder().encode(SECRET),
+    new TextEncoder().encode(process.env.ACCESS_SECRET ?? ""),
   );
   return {
     login: true,
