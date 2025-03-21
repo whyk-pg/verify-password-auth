@@ -95,8 +95,4 @@ app.get("/logout", (c) => {
   return c.json({ message: "Logout" });
 });
 
-app.get("/profile", (c) => {
-  return c.json({ message: "Profile" });
-});
-
 export default app;
