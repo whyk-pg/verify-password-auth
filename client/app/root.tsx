@@ -1,14 +1,20 @@
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LinksFunction,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
 import {
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  redirect,
   useLoaderData,
 } from "@remix-run/react";
 
 import "./tailwind.css";
+import { authTokenStorage, refreshTokenStorage } from "./utils/cookie";
 import { getUser } from "./utils/user";
 
 export const links: LinksFunction = () => [
@@ -23,6 +29,24 @@ export const links: LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+export const action: ActionFunction = async ({ request }) => {
+  const cookieHeader = request.headers.get("Cookie");
+  const authSession = await authTokenStorage.getSession(cookieHeader);
+  const refreshSession = await refreshTokenStorage.getSession();
+
+  const headers = new Headers();
+  headers.append(
+    "Set-Cookie",
+    await authTokenStorage.destroySession(authSession),
+  );
+  headers.append(
+    "Set-Cookie",
+    await refreshTokenStorage.destroySession(refreshSession),
+  );
+
+  return redirect("/", { headers });
+};
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   return getUser(request);
@@ -52,6 +76,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <p>
                 {user.username} ({user.role})
               </p>
+              <form method="post">
+                <button type="submit">ログアウト</button>
+              </form>
             </div>
           )}
           {!user.login && <a href="/login">ログイン</a>}
