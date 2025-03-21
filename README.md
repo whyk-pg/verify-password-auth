@@ -53,7 +53,7 @@
 - Headerでアクセストークンを受け取る
 
 ### シーケンス図
-``` mermaid
+```mermaid
 sequenceDiagram
     participant Frontend as フロントエンド
     participant Backend as バックエンド
