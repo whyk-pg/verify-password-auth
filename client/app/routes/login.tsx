@@ -5,7 +5,7 @@ import {
   redirect,
 } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
-import { authTokenStorage, refreshTokenStorage } from "~/utils/auth";
+import { authTokenStorage, getTokens, refreshTokenStorage } from "~/utils/auth";
 
 export const meta: MetaFunction = () => {
   return [
@@ -15,29 +15,17 @@ export const meta: MetaFunction = () => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const res = await fetch(`${process.env.API_ORIGIN}/login`, {
-    method: "POST",
-    body: JSON.stringify({
-      email: formData.get("email"),
-      password: formData.get("password"),
-    }),
-    credentials: "include",
-  });
+  const tokens = await getTokens(request);
 
-  if (!res.ok) {
-    return redirect(`/login?status=${res.status}`);
+  if (!tokens.ok) {
+    return redirect(`/login?status=${tokens.status}`);
   }
 
-  const { authToken, refreshToken } = (await res.json()) as {
-    authToken: string;
-    refreshToken: string;
-  };
   const headers = new Headers();
   const authSession = await authTokenStorage.getSession();
-  authSession.set("auth_token", authToken);
+  authSession.set("auth_token", tokens.authToken);
   const refreshSession = await refreshTokenStorage.getSession();
-  refreshSession.set("refresh_token", refreshToken);
+  refreshSession.set("refresh_token", tokens.refreshToken);
   headers.append(
     "Set-Cookie",
     await authTokenStorage.commitSession(authSession),
