@@ -9,12 +9,19 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  json,
   redirect,
   useLoaderData,
 } from "@remix-run/react";
 
 import "./tailwind.css";
-import { authTokenStorage, refreshTokenStorage } from "./utils/auth";
+import {
+  authTokenStorage,
+  getTokens,
+  isValidAuth,
+  refreshTokenStorage,
+  regenerateAuthToken,
+} from "./utils/auth";
 import { getUser } from "./utils/user";
 
 export const links: LinksFunction = () => [
@@ -49,7 +56,27 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  return getUser(request);
+  const { authToken, refreshToken } = await getTokens(
+    request.headers.get("Cookie"),
+  );
+  const { isAuth, canRefresh } = await isValidAuth({ authToken, refreshToken });
+  let newToken: string | undefined;
+  const headers = new Headers();
+  if (!isAuth && canRefresh) {
+    const regeneretedToken = await regenerateAuthToken(refreshToken);
+    newToken = regeneretedToken.isRegenerated
+      ? regeneretedToken.newToken
+      : undefined;
+    const authSession = await authTokenStorage.getSession();
+    authSession.set("auth_token", newToken);
+    headers.append(
+      "Set-Cookie",
+      await authTokenStorage.commitSession(authSession),
+    );
+  }
+  const user = await getUser(authToken ?? newToken);
+  // Remixのjson関数は非推奨だが、型情報を上手いこと解釈してくれるので使っている
+  return json(user, { headers });
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {

@@ -1,5 +1,5 @@
 import { jwtVerify } from "jose";
-import { authTokenStorage } from "./auth";
+import type { Payload } from "~/type";
 
 type NotLoggedIn = {
   login: false;
@@ -11,24 +11,24 @@ type LoggedIn = {
   icon: string;
 };
 export type User = NotLoggedIn | LoggedIn;
-type Payload = {
-  sub: string;
-  role: string;
-  icon: string;
-};
 
-export const getUser = async (request: Request): Promise<User> => {
-  const cookieHeader = request.headers.get("Cookie");
-  if (!cookieHeader) {
+/**
+ * ユーザー情報を取得する
+ * @param token 認証トークン
+ * @returns ユーザー情報
+ */
+export const getUser = async (token: string | undefined): Promise<User> => {
+  if (!token) {
     return {
       login: false,
     };
   }
-  const authSession = await authTokenStorage.getSession(cookieHeader);
+
   const { payload } = await jwtVerify<Payload>(
-    authSession.get("auth_token"),
+    token,
     new TextEncoder().encode(process.env.ACCESS_SECRET ?? ""),
   );
+
   return {
     login: true,
     username: payload.sub,

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { HTTPException } from "hono/http-exception";
-import { sign } from "hono/jwt";
+import { sign, verify } from "hono/jwt";
 
 type Bindings = {
   SERVICE_ORIGIN: string;
@@ -96,8 +96,36 @@ app.post("/login", async (c) => {
   return c.json({ authToken, refreshToken });
 });
 
-app.get("/refresh", (c) => {
-  return c.json({ message: "Refresh" });
+app.post("/refresh", async (c) => {
+  const { refreshToken } = await c.req.json<{
+    refreshToken: string;
+  }>();
+  const decoded = await verify(refreshToken, c.env.REFRESH_SECRET);
+  if (decoded.exp && decoded.exp < Date.now() / 1000) {
+    throw new HTTPException(401, { message: "Unauthorized" });
+  }
+
+  const user = MOCK_USERS.find((u) => u.username === decoded.sub);
+  if (!user) {
+    throw new HTTPException(401, { message: "Unauthorized" });
+  }
+
+  // 現在時刻(ミリ秒)をUNIX時刻(秒)に変換
+  const unixTimeNow = Date.now() / 1000;
+  // 1時間の秒数
+  const ONE_HOUR = 3600;
+  const authExpire = unixTimeNow + ONE_HOUR;
+  const authToken = await sign(
+    {
+      sub: user.username,
+      role: user.role,
+      icon: user.icon_url,
+      exp: authExpire,
+      token_type: "access",
+    },
+    c.env.ACCESS_SECRET,
+  );
+  return c.json({ authToken });
 });
 
 export default app;
