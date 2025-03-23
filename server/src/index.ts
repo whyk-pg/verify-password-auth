@@ -67,9 +67,13 @@ app.post("/login", async (c) => {
     throw new HTTPException(401, { message: "Unauthorized" });
   }
 
-  const RELATIVE_ONE_HOUR = Math.floor(Date.now() / 1000) + 60 * 60;
-  const authExpire = RELATIVE_ONE_HOUR;
-  const refreshExpire = RELATIVE_ONE_HOUR * 24 * 7;
+  // 現在時刻(ミリ秒)をUNIX時刻(秒)に変換
+  const unixTimeNow = Date.now() / 1000;
+  // 1時間の秒数
+  const ONE_HOUR = 3600;
+  const authExpire = unixTimeNow + ONE_HOUR;
+  const refreshExpire = unixTimeNow + ONE_HOUR * 24 * 7;
+
   const authToken = await sign(
     {
       sub: user.username,
