@@ -1,5 +1,5 @@
 import { jwtVerify } from "jose";
-import { authTokenStorage } from "./cookie";
+import { authTokenStorage } from "./auth";
 
 type NotLoggedIn = {
   login: false;

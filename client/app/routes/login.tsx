@@ -5,7 +5,7 @@ import {
   redirect,
 } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
-import { authTokenStorage, refreshTokenStorage } from "~/utils/cookie";
+import { authTokenStorage, refreshTokenStorage } from "~/utils/auth";
 
 export const meta: MetaFunction = () => {
   return [

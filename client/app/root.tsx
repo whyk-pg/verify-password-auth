@@ -14,7 +14,7 @@ import {
 } from "@remix-run/react";
 
 import "./tailwind.css";
-import { authTokenStorage, refreshTokenStorage } from "./utils/cookie";
+import { authTokenStorage, refreshTokenStorage } from "./utils/auth";
 import { getUser } from "./utils/user";
 
 export const links: LinksFunction = () => [
