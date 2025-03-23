@@ -43,11 +43,11 @@ type Tokens =
     };
 
 /**
- * 認証に使うトークン群を取得
+ * 認証に使うトークン群を生成
  * @param request HTTPリクエスト
  * @returns 認証トークンとリフレッシュトークン
  */
-export const getTokens = async (request: Request): Promise<Tokens> => {
+export const generateTokens = async (request: Request): Promise<Tokens> => {
   const formData = await request.formData();
   const res = await fetch(`${process.env.API_ORIGIN}/login`, {
     method: "POST",

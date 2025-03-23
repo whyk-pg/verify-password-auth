@@ -5,7 +5,11 @@ import {
   redirect,
 } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
-import { authTokenStorage, getTokens, refreshTokenStorage } from "~/utils/auth";
+import {
+  authTokenStorage,
+  generateTokens,
+  refreshTokenStorage,
+} from "~/utils/auth";
 
 export const meta: MetaFunction = () => {
   return [
@@ -15,7 +19,7 @@ export const meta: MetaFunction = () => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  const tokens = await getTokens(request);
+  const tokens = await generateTokens(request);
 
   if (!tokens.ok) {
     return redirect(`/login?status=${tokens.status}`);
