@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { bearerAuth } from "hono/bearer-auth";
 import { cors } from "hono/cors";
 import { HTTPException } from "hono/http-exception";
 import { sign, verify } from "hono/jwt";
@@ -127,5 +128,27 @@ app.post("/refresh", async (c) => {
   );
   return c.json({ authToken });
 });
+
+app.get(
+  "/contents",
+  bearerAuth({
+    verifyToken: async (token, c) => {
+      try {
+        await verify(token, c.env.ACCESS_SECRET);
+        return true;
+      } catch (_error) {
+        return false;
+      }
+    },
+  }),
+  (c) => {
+    const content = {
+      title: "Sample Content",
+      body: "This is a sample content.",
+    };
+
+    return c.json(content);
+  },
+);
 
 export default app;
