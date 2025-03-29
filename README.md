@@ -1,7 +1,7 @@
 # Verify Password Auth
 <!-- ![Status: ToDo](https://flat.badgen.net/static/Status/ToDo/red) -->
-![Status: In Progress](https://flat.badgen.net/static/Status/In%20Progress/yellow)
-<!-- ![Status: Done](https://flat.badgen.net/static/Status/Done/green) -->
+<!-- ![Status: In Progress](https://flat.badgen.net/static/Status/In%20Progress/yellow) -->
+![Status: Done](https://flat.badgen.net/static/Status/Done/green)
 
 ## 本リポジトリの目的
 近々、個人的なシステムに使うJWTを使ったパスワードログインの保持を試したいから
