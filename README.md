@@ -13,8 +13,14 @@
 - [x] ログイン機能の実装
 - [x] 自動リフレッシュ機能の実装
 - [x] ログアウト機能の実装
-- [ ] Cloudflareでホスティング
-- [ ] Cloudflareで動作確認
+
+### ここでやらないこと
+client/server共にCloudflare前提だが、Cloudflare周りは検証しない
+
+- Cloudflare D1を使ったデータのやり取り
+- RemixのCloudflare Workers移行
+- Service Bindings対応
+- Cloudflareでのホスティング
 
 ## 遭遇した不具合
 ### Cookieがクライアントサイドに保存されない
