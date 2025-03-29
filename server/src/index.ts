@@ -3,6 +3,7 @@ import { bearerAuth } from "hono/bearer-auth";
 import { cors } from "hono/cors";
 import { HTTPException } from "hono/http-exception";
 import { sign, verify } from "hono/jwt";
+import { verifyPassword } from "./utils/password";
 
 type Bindings = {
   SERVICE_ORIGIN: string;
@@ -32,6 +33,7 @@ interface User {
   email: string;
   icon_url: string;
   password: string;
+  salt: string;
 }
 
 // テスト用のユーザー情報（本来はDBなどから取得）
@@ -39,7 +41,9 @@ const MOCK_USERS = [
   {
     email: "mock01@example.com",
     username: "mock01",
-    password: "password",
+    password:
+      "73616c74:fbb92d693fc005c6f557c892f4c7072d043a81a3049c59c04e023a9aad42b46d", // password
+    salt: "salt", // 本来はランダムなソルトを使用する
     // [Deno Avater](https://deno-avatar.deno.dev)で生成したアバター画像
     icon_url: "https://deno-avatar.deno.dev/avatar/50659f.svg",
     role: Role.ADMIN,
@@ -61,7 +65,7 @@ app.post("/login", async (c) => {
   }>();
 
   const user = MOCK_USERS.find(
-    (u) => u.email === email && u.password === password,
+    (u) => u.email === email && verifyPassword(u.password, password),
   );
 
   if (!user) {

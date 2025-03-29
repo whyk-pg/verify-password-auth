@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
+    "test": "vitest",
     "copy:env": "cp .dev.vars.example .dev.vars"
   },
   "dependencies": {
