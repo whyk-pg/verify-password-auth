@@ -22,7 +22,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return {
       title: "Error",
       body: "Failed to fetch content.",
-    }
+    };
   }
 
   return res.json<{ title: string; body: string }>();
