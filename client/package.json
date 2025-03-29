@@ -12,7 +12,8 @@
     "typecheck": "tsc",
     "typegen": "wrangler types",
     "preview": "pnpm run build && wrangler pages dev",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "copy:env": "cp .env.example .env"
   },
   "dependencies": {
     "@remix-run/cloudflare": "^2.15.3",

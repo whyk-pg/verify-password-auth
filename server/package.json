@@ -2,7 +2,8 @@
   "name": "server",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify"
+    "deploy": "wrangler deploy --minify",
+    "copy:env": "cp .dev.vars.example .dev.vars"
   },
   "dependencies": {
     "hono": "^4.7.4"
