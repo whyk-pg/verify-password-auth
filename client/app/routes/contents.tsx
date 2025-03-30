@@ -4,7 +4,7 @@ import {
   type MetaFunction,
   redirect,
 } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import { json, useLoaderData } from "@remix-run/react";
 import { authTokenStorage, getTokens, refreshTokenStorage } from "~/utils/auth";
 
 export const meta: MetaFunction = () => {
@@ -32,20 +32,40 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect("/contents", { headers });
 };
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1秒
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { authToken } = await getTokens(request.headers.get("Cookie"));
+  let retryCount = 0;
+  
+  const fetchWithRetry = async (): Promise<Response> => {
+    const { authToken } = await getTokens(request.headers.get("Cookie"));
 
-  const res = await fetch(`${process.env.API_ORIGIN}/contents`, {
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-    },
-  });
+    if (!authToken && retryCount < MAX_RETRIES) {
+      retryCount++;
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return fetchWithRetry();
+    }
+
+    const res = await fetch(`${process.env.API_ORIGIN}/contents`, {
+      headers: { Authorization: `Bearer ${authToken}` }
+    });
+
+    if (!res.ok && retryCount < MAX_RETRIES) {
+      retryCount++;
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return fetchWithRetry();
+    }
+
+    return res;
+  };
+
+  const res = await fetchWithRetry();
 
   if (!res.ok) {
-    return {
-      title: "Error",
-      body: "Failed to fetch content.",
-    };
+    return json(
+      { title: "Error", body: "Failed to fetch content." },
+      { status: 500 }
+    );
   }
 
   return res.json<{ title: string; body: string }>();
