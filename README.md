@@ -1,7 +1,7 @@
 # Verify Password Auth
 <!-- ![Status: ToDo](https://flat.badgen.net/static/Status/ToDo/red) -->
-<!-- ![Status: In Progress](https://flat.badgen.net/static/Status/In%20Progress/yellow) -->
-![Status: Done](https://flat.badgen.net/static/Status/Done/green)
+![Status: In Progress](https://flat.badgen.net/static/Status/In%20Progress/yellow)
+<!-- ![Status: Done](https://flat.badgen.net/static/Status/Done/green) -->
 
 ## 本リポジトリの目的
 近々、個人的なシステムに使うJWTを使ったパスワードログインの保持を試したいから
@@ -14,6 +14,7 @@
 - [x] 自動リフレッシュ機能の実装
 - [x] ログアウト機能の実装
 - [x] パスワードの暗号化
+- [ ] 再認証時のコンテンツ取得エラー解決
 
 ### ここでやらないこと
 client/server共にCloudflare前提だが、Cloudflare周りは検証しない
@@ -32,10 +33,8 @@ client/server共にCloudflare前提だが、Cloudflare周りは検証しない
 なので、現在はサーバー側からJSONでトークンを受け取り、`action`でCookieを生成して`Set-Cookie`で送る実装に変えている。
 
 ### 認証トークン再取得直後にコンテンツ取得が失敗する
-状態としては、認証トークンが失効してCookieから消えたときに画面に留まっていた場合、再読み込みをすると認証に失敗してコンテンツが取れなくなる。  
-予測だが、認証トークン再取得時点だとCookieには何も入らず、loaderを動かしてからSet-Cookieするものと思われる。そのため、いくらリトライ処理をしても（50回やっても）変わらなかった。
-
-今のところ解決策は思いついていないので、回避策としてコンテンツ取得が認証で失敗したときは『画面の再読み込みで解決する場合があります。』のような案内を入れておく。
+状態としては、認証トークンが失効してCookieから消えたあと、再読み込みをすると必ず認証に失敗してコンテンツが取れなくなる。  
+予測だが、認証トークン再取得時点だとCookieには何も入らず、loaderを動かしてから`Set-Cookie`するものと思われる。そのため、いくらリトライ処理をしても（50回やっても）変わらなかった。
 
 ## 要件
 ### クライアントサイド
