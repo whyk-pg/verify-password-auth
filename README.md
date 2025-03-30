@@ -62,11 +62,6 @@ client/server共にCloudflare前提だが、Cloudflare周りは検証しない
 - Outは特になし
 - Cookieで新しく払い出されたアクセストークンを受け取る
 
-#### Profile API
-- Inは特になし
-- Outはユーザーのアイコン画像URLとユーザー名
-- Headerでアクセストークンを受け取る
-
 ### シーケンス図
 ```mermaid
 sequenceDiagram
